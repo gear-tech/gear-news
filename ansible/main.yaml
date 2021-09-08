@@ -40,9 +40,9 @@
       shell: >
         echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env
       environment:
-        DB_NAME: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
-        DB_USER: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
-        DB_USER: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+        FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
 
     - name: Start ide-backend service
       systemd:
