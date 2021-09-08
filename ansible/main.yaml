@@ -3,13 +3,20 @@
   become: yes
   remote_user: ec2-user
   vars:
-        DB_NAME: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
-        DB_USER: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
-        DB_USER: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+        FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
 
 #Do tasks
   tasks:
-    - name: Creates Nginx cert directory
+    - name: Copy ide-backend service if not exist
+      copy:
+        src: newsbot.service
+        dest: /lib/systemd/system/newsbot.service
+        force: no
+      become: yes
+
+    - name: Creates bot directory
       file:
         path: /home/ec2-user/bot
         state: directory
@@ -29,9 +36,17 @@
         src: ../feedly_api.py
         dest: /home/ec2-user/bot/telegram_api.py 
 
-    - name: execute install script
-      script: /home/ec2-user/bot/gear-news-bot.py 
+    - name: Create ide-backend file .env
+      shell: >
+        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env
       environment:
-        FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
-        FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
-        TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+        DB_NAME: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        DB_USER: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        DB_USER: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+
+    - name: Start ide-backend service
+      systemd:
+        name: newsbot
+        state: started
+        enabled: yes
+        daemon-reload: yes
