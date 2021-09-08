@@ -1,5 +1,5 @@
 [Service]
 Restart=on-failure
-WorkingDirectory=/home/ec2-user/newsbot
-ExecStart=/usr/bin/python3 run start
+WorkingDirectory=/home/ec2-user/bot
+ExecStart=/usr/bin/python3 gear_news_bot
 EnvironmentFile=/home/ec2-user/bot/.env
