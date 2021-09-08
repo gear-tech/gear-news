@@ -8,6 +8,8 @@
         DB_USER: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
 
 #Do tasks
+  tasks:
+
     - name: Copy script files
       copy:
         src: ../*py
