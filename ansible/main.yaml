@@ -12,8 +12,18 @@
 
     - name: Copy script files
       copy:
-        src: ../*py
-        dest: /home/ec2-user/bot/
+        src: ../gear_news_bot.py
+        dest: /home/ec2-user/bot/gear_news_bot.py
+
+    - name: Copy script files
+      copy:
+        src: ../feedly_api.py
+        dest: /home/ec2-user/bot/telegram_api.py 
+
+    - name: Copy script files
+      copy:
+        src: ../feedly_api.py
+        dest: /home/ec2-user/bot/telegram_api.py 
 
     - name: execute install script
       script: /home/ec2-user/bot/gear-news-bot.py 
