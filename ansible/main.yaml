@@ -9,7 +9,7 @@
 
 #Do tasks
   tasks:
-    - name: Copy ide-backend service if not exist
+    - name: Copy newsbot service if not exist
       copy:
         src: newsbot.service
         dest: /lib/systemd/system/newsbot.service
