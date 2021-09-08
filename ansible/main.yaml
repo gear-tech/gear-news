@@ -9,7 +9,7 @@
 
 #Do tasks
   tasks:
-    - name: Copy newsbot service if not exist
+    - name: Copy newsbotservice if not exist
       copy:
         src: newsbot.service
         dest: /lib/systemd/system/newsbot.service
@@ -29,11 +29,11 @@
     - name: Copy script files
       copy:
         src: ../feedly_api.py
-        dest: /home/ec2-user/bot/telegram_api.py 
+        dest: /home/ec2-user/bot/feedly_api.py 
 
     - name: Copy script files
       copy:
-        src: ../feedly_api.py
+        src: ../telegram_api.py
         dest: /home/ec2-user/bot/telegram_api.py 
 
     - name: Create ide-backend file .env
