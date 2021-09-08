@@ -1,0 +1,21 @@
+- name: "deploy to aws"
+  hosts: all
+  become: yes
+  remote_user: ec2-user
+  vars:
+        DB_NAME: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        DB_USER: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        DB_USER: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+
+#Do tasks
+    - name: Copy script files
+      copy:
+        src: ../*py
+        dest: /home/ec2-user/bot/
+
+    - name: execute install script
+      script: /home/ec2-user/bot/gear-news-bot.py 
+      environment:
+        FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"

@@ -1,0 +1,30 @@
+name: CD
+
+on:
+  push:
+    branches: [master, add-deploy]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Docker
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          directory: ./ansible/
+          playbook: main.yaml
+          # Optional, SSH private key
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          # Optional, literal inventory file contents
+          inventory: |
+            [all]
+            ${{secrets.backend_ip}} 
+        env:
+          FEEDLY_ACCESS_TOKEN: ${{ secrets.FEEDLY_ACCESS_TOKEN }}
+          FEEDLY_REFRESH_TOKEN: ${{ secrets.FEEDLY_REFRESH_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
