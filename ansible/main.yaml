@@ -9,6 +9,10 @@
 
 #Do tasks
   tasks:
+    - name: Creates Nginx cert directory
+      file:
+        path: /home/ec2-user/bot
+        state: directory
 
     - name: Copy script files
       copy:
