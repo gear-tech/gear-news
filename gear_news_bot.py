@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser(description='Run GEAR News Telegram Bot digest 
 parser.add_argument('channel', type=str, help='Telegram channel to send digest to.')
 parser.add_argument('feed', type=str, help='Feedly Feed label to use for digest.')
 parser.add_argument('time', type=str, help='Time to publish the digest')
+parser.add_argument('freq', type=int, help='Amount of hours between posting the digest')
 parser.add_argument('--count', type=int, help='Number of articles to include in the digest.')
 parser.add_argument('--force-init', action='store_true', help='Publish a digest upon starting the script.')
 args = parser.parse_args()
@@ -27,6 +28,7 @@ args = parser.parse_args()
 telegram_channel = args.channel
 feed_label = args.feed
 publish_time = args.time
+frequency = args.freq
 digest_count = args.count or DEFAULT_COUNT
 force_init = args.force_init
 
@@ -72,13 +74,14 @@ def post_news():
 
   print('Successfully sent a digest!')
 
-schedule.every().day.at(publish_time).do(post_news)
+schedule.every(frequency).hours.at(publish_time).do(post_news)
 
 print('Starting the schedule poll with the following parameters:')
 print(f'TG Channel: {telegram_channel}\n'\
       f'Feedly Feed Label: {feed_label}\n'\
       f'Digest Count: {digest_count}\n'\
       f'Publish time: {publish_time}\n'\
+      f'Frequency: {frequency}\n'\
       f'Force Start: {force_init}')
 
 # force a digest post upon initialization if flag set
@@ -87,4 +90,4 @@ if force_init:
 
 while True:
   schedule.run_pending()
-  time.sleep(60) 
+  time.sleep(60)
