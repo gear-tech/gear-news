@@ -29,6 +29,15 @@ class FeedlyApi:
       'source': entry.get('origin', {}).get('title', '')
     }
 
+  def _remove_duplicates(self, entries):
+    result = []
+
+    for entry in entries:
+      if entry['title'] not in [item['title'] for item in result]:
+        result.append(entry)
+
+    return result
+
   # fetch API user's profile
   def fetch_profile(self):
     return self._fetch('profile')
@@ -63,5 +72,5 @@ class FeedlyApi:
 
     return {
       'success': True,
-      'data': [self._format_entry(entry) for entry in mix_response]
+      'data': self._remove_duplicates([self._format_entry(entry) for entry in mix_response]),
     }
