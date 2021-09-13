@@ -5,9 +5,13 @@
 
 #### Prerequisites
 - Environmental variables
+
 `FEEDLY_ACCESS_TOKEN`
+
 `FEEDLY_REFRESH_TOKEN`
+
 `TELEGRAM_BOT_TOKEN`
+
 - Telegram Channel
 - Telegram Bot
 - Feedly Developer Account
