@@ -39,7 +39,7 @@
 
     - name: Create ide-backend file .env
       shell: >
-        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN";>>/home/ec2-user/bot/.env;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env
+        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env
       environment:
         FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
         FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
