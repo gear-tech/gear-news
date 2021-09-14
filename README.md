@@ -18,4 +18,4 @@
 - Feedly Feed
 
 #### Example
-`python gear_news_bot.py @gear_news 'test feed' '21:12' --count 10 --force-init`
+`python gear_news_bot.py @gear_news 'test feed' '21:12' 1 --count 10 --force-init`

@@ -47,17 +47,18 @@ class FeedlyApi:
     return self._fetch('collections')
 
   # fetch the most engaging articles from the feed
-  def fetch_feed_mix(self, stream_id, count = 5):
+  def fetch_feed_mix(self, stream_id, lifespan, count = 5):
     params = {
       'streamId': stream_id,
       'count': count,
-      'hours': 24,
+      'hours': lifespan,
       'backfill': True,
+      'locale': 'en',
     }
     return self._fetch(f'mixes/contents', params = params)
 
   # collect the most engaging articles from the primary feed
-  def collect_content(self, label, count = 5):
+  def collect_content(self, label, lifespan, count = 5):
     # retrieve matching collections by label provided
     collections_ids = [c['id'] for c in self.fetch_collections() if label.lower() == c['label'].lower()]
 
@@ -68,7 +69,7 @@ class FeedlyApi:
       }
   
     stream_id = collections_ids[0]
-    mix_response = self.fetch_feed_mix(stream_id, count).get('items', [])
+    mix_response = self.fetch_feed_mix(stream_id, lifespan, count).get('items', [])
 
     return {
       'success': True,

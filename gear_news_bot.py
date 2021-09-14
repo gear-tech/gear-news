@@ -54,7 +54,8 @@ if not feedly_api.active:
 def post_news():
   print('Executing the daily digest job...')
 
-  result = feedly_api.collect_content(feed_label, count = digest_count)
+  # we use frequency as lifespan in order to only fetch articles from the past FREQ hours
+  result = feedly_api.collect_content(feed_label, frequency, count = digest_count)
 
   # abort if couldn't fetch data from Feedly
   if not result['success']:
