@@ -17,16 +17,27 @@ class FeedlyApi:
     headers = {'Authorization': f'Bearer {self.access_token}'}
     return requests.get(f'https://cloud.feedly.com/v3/{endpoint}', headers = headers, params = params).json()
   
-  def _format_title(self, title):
+  def _generate_title(self, title):
     return re.sub(' +', ' ', title).replace('\n', '').rstrip()
+
+  def _generate_preview(self, summary):
+    clean_text = re.sub(' +', ' ', summary).replace('\n', '').rstrip()
+
+    if not clean_text:
+      return ''
+
+    return ' '.join(clean_text.split(' ')[:50]) + '...'
+
 
   def _format_entry(self, entry):
     return {
-      'url': entry.get('canonicalUrl', ''),
+      'url': entry.get('alternate', [{}])[0].get('href', ''),
       'tags': [item['label'] for item in entry.get('commonTopics', [])],
-      'title': self._format_title(entry.get('title', '')),
+      'title': self._generate_title(entry.get('title', '')),
       'thumbnail': entry.get('visual', {}).get('url', ''),
-      'source': entry.get('origin', {}).get('title', '')
+      'source': entry.get('origin', {}).get('title', ''),
+      'sourceUrl': entry.get('origin', {}).get('htmlUrl', ''),
+      'preview': self._generate_preview(entry.get('summary', {}).get('content', ''))
     }
 
   def _remove_duplicates(self, entries):

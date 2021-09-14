@@ -7,6 +7,8 @@ from feedly_api import FeedlyApi
 from telegram_api import TelegramChannelBotApi
 
 DEFAULT_COUNT = 5
+INTRO_NEWS = 'GEAR News Digest'
+INTRO_SM = 'GEAR Social Media Digest'
 
 feedly_access_token = os.environ.get('FEEDLY_ACCESS_TOKEN')
 feedly_refresh_token = os.environ.get('FEEDLY_REFRESH_TOKEN')
@@ -18,7 +20,8 @@ if None in (feedly_access_token, feedly_refresh_token, telegram_bot_token):
 
 parser = argparse.ArgumentParser(description='Run GEAR News Telegram Bot digest scheduler.')
 parser.add_argument('channel', type=str, help='Telegram channel to send digest to.')
-parser.add_argument('feed', type=str, help='Feedly Feed label to use for digest.')
+parser.add_argument('news_feed', type=str, help='Feedly Feed label to use for the news digest.')
+parser.add_argument('sm_feed', type=str, help='Feedly Feed label to use for the social media digest.')
 parser.add_argument('time', type=str, help='Time to publish the digest')
 parser.add_argument('freq', type=int, help='Amount of hours between posting the digest')
 parser.add_argument('--count', type=int, help='Number of articles to include in the digest.')
@@ -26,21 +29,27 @@ parser.add_argument('--force-init', action='store_true', help='Publish a digest 
 args = parser.parse_args()
 
 telegram_channel = args.channel
-feed_label = args.feed
+news_feed_label = args.news_feed
+sm_feed_label = args.sm_feed
 publish_time = args.time
 frequency = args.freq
 digest_count = args.count or DEFAULT_COUNT
 force_init = args.force_init
 
 def format_entry(feedly_entry):
-  return f'''<b><a href="{feedly_entry['url']}">{feedly_entry['title']}</a></b>
-<i>tags: <code>{', '.join(feedly_entry['tags'])}</code></i>
-source: {feedly_entry['source']}'''
+  body = f'''<b><a href="{feedly_entry['url']}">{feedly_entry['title']}</a></b>
+source: <a href="{feedly_entry['sourceUrl']}">{feedly_entry['source']}</a>'''
+  preview = f"preview: <i>{feedly_entry['preview']}</i>"
 
-def format_digest(feedly_entries):
+  if feedly_entry['preview']:
+    return body + '\n' + preview
+
+  return body
+
+def format_digest(intro, feedly_entries):
   nl = '\n\n'
 
-  return f'''GEAR News Daily Digest for {date.today().strftime("%B %d, %Y")}\n
+  return f'''{intro}\n
 {nl.join([format_entry(entry) for entry in feedly_entries])}'''
 
 feedly_api = FeedlyApi(feedly_access_token, feedly_refresh_token)
@@ -55,16 +64,37 @@ def post_news():
   print('Executing the daily digest job...')
 
   # we use frequency as lifespan in order to only fetch articles from the past FREQ hours
-  result = feedly_api.collect_content(feed_label, frequency, count = digest_count)
+  news_result = feedly_api.collect_content(news_feed_label, frequency, count = digest_count)
+  sm_result = feedly_api.collect_content(sm_feed_label, frequency, count = digest_count)
 
-  # abort if couldn't fetch data from Feedly
-  if not result['success']:
+  # abort if couldn't fetch news data from Feedly
+  if not news_result['success']:
     print('Error fetching data from Feedly. Details:')
+    print(news_result['error'])
+    return
+
+  # abort if couldn't fetch sm data from Feedly
+  if not sm_result['success']:
+    print('Error fetching data from Feedly. Details:')
+    print(sm_result['error'])
+    return
+
+  # send news digest
+  news = news_result['data']
+  message = format_digest(INTRO_NEWS, news)
+  print(message)
+  result = telegram_api.send_message(message)
+
+  # abort if couldn't send a message to the channel
+  if not result['success']:
+    print('Error sending a message to TG Channel. Details:')
     print(result['error'])
     return
 
-  news = result['data']
-  message = format_digest(news)
+  # send social media digest
+  sm = sm_result['data']
+  message = format_digest(INTRO_SM, sm)
+  print(message)
   result = telegram_api.send_message(message)
 
   # abort if couldn't send a message to the channel
@@ -79,7 +109,8 @@ schedule.every(frequency).hours.at(publish_time).do(post_news)
 
 print('Starting the schedule poll with the following parameters:')
 print(f'TG Channel: {telegram_channel}\n'\
-      f'Feedly Feed Label: {feed_label}\n'\
+      f'Feedly News Feed Label: {news_feed_label}\n'\
+      f'Feedly Social Media Feed Label: {sm_feed_label}\n'\
       f'Digest Count: {digest_count}\n'\
       f'Publish time: {publish_time}\n'\
       f'Frequency: {frequency}\n'\
