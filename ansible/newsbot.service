@@ -1,5 +1,5 @@
 [Service]
 Restart=on-failure
 WorkingDirectory=/home/ec2-user/bot
-ExecStart=/usr/bin/python3 /home/ec2-user/bot/gear_news_bot.py @gear_news 'Gear Feed''Gear SM Feed' '00:00' {{FREQ}} --count {{COUNT}} --force-init
+ExecStart=/usr/bin/python3.8  /home/ec2-user/bot/gear_news_bot.py @gear_news 'Gear Feed' 'Gear SM Feed' '00:00' {{FREQ}} --count {{COUNT}} --force-init
 EnvironmentFile=/home/ec2-user/bot/.env
