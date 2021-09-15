@@ -21,7 +21,8 @@ class FeedlyApi:
     return re.sub(' +', ' ', title).replace('\n', '').rstrip()
 
   def _generate_preview(self, summary):
-    clean_text = re.sub(' +', ' ', summary).replace('\n', '').rstrip()
+    tag_cleaner = re.compile('<.*?>')
+    clean_text = re.sub(tag_cleaner, '', re.sub(' +', ' ', summary)).replace('\n', '').rstrip()
 
     if not clean_text:
       return ''

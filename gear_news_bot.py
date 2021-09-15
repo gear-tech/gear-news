@@ -82,7 +82,6 @@ def post_news():
   # send news digest
   news = news_result['data']
   message = format_digest(INTRO_NEWS, news)
-  print(message)
   result = telegram_api.send_message(message)
 
   # abort if couldn't send a message to the channel
@@ -94,7 +93,6 @@ def post_news():
   # send social media digest
   sm = sm_result['data']
   message = format_digest(INTRO_SM, sm)
-  print(message)
   result = telegram_api.send_message(message)
 
   # abort if couldn't send a message to the channel
