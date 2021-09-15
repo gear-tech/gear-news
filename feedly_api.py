@@ -1,5 +1,6 @@
 import requests
 import re
+import time
 
 class FeedlyApi:
   def __init__(self, access_token, refresh_token):
@@ -21,7 +22,8 @@ class FeedlyApi:
     return re.sub(' +', ' ', title).replace('\n', '').rstrip()
 
   def _generate_preview(self, summary):
-    clean_text = re.sub(' +', ' ', summary).replace('\n', '').rstrip()
+    tag_cleaner = re.compile('<.*?>')
+    clean_text = re.sub(tag_cleaner, '', re.sub(' +', ' ', summary)).replace('\n', '').rstrip()
 
     if not clean_text:
       return ''
@@ -37,7 +39,8 @@ class FeedlyApi:
       'thumbnail': entry.get('visual', {}).get('url', ''),
       'source': entry.get('origin', {}).get('title', ''),
       'sourceUrl': entry.get('origin', {}).get('htmlUrl', ''),
-      'preview': self._generate_preview(entry.get('summary', {}).get('content', ''))
+      'preview': self._generate_preview(entry.get('summary', {}).get('content', '')),
+      'published': round(entry.get('published', 1000) / 1000),
     }
 
   def _remove_duplicates(self, entries):
@@ -66,10 +69,22 @@ class FeedlyApi:
       'backfill': True,
       'locale': 'en',
     }
-    return self._fetch(f'mixes/contents', params = params)
+    return self._fetch('mixes/contents', params = params)
 
-  # collect the most engaging articles from the primary feed
-  def collect_content(self, label, lifespan, count = 5):
+  def fetch_stream(self, stream_id, lifespan, count = 5):
+    params = {
+      'streamId': stream_id,
+      'count': count,
+      'ranked': 'engagement',
+      'importantOnly': True,
+      # calculate the last update time
+      'newerThan': round(time.time() - lifespan * 60 * 60),
+    }
+
+    return self._fetch('streams/contents', params = params)
+
+  # collect the most engaging articles from the specified feed
+  def collect_content(self, fetch_fn, label, lifespan, count = 5):
     # retrieve matching collections by label provided
     collections_ids = [c['id'] for c in self.fetch_collections() if label.lower() == c['label'].lower()]
 
@@ -80,9 +95,9 @@ class FeedlyApi:
       }
   
     stream_id = collections_ids[0]
-    mix_response = self.fetch_feed_mix(stream_id, lifespan, count).get('items', [])
+    items = fetch_fn(stream_id, lifespan, count = count).get('items', [])
 
     return {
       'success': True,
-      'data': self._remove_duplicates([self._format_entry(entry) for entry in mix_response]),
+      'data': self._remove_duplicates([self._format_entry(entry) for entry in items]),
     }

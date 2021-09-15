@@ -1,6 +1,6 @@
 import schedule
 import time
-from datetime import date
+from datetime import date, datetime
 import os
 import argparse
 from feedly_api import FeedlyApi
@@ -39,10 +39,14 @@ force_init = args.force_init
 def format_entry(feedly_entry):
   body = f'''<b><a href="{feedly_entry['url']}">{feedly_entry['title']}</a></b>
 source: <a href="{feedly_entry['sourceUrl']}">{feedly_entry['source']}</a>'''
-  preview = f"preview: <i>{feedly_entry['preview']}</i>"
+
+  if feedly_entry['published']:
+    published = f"published: {datetime.utcfromtimestamp(feedly_entry['published']).strftime('Today at %H:%M UTC')}"
+    body += '\n' + published
 
   if feedly_entry['preview']:
-    return body + '\n' + preview
+    preview = f"preview: <i>{feedly_entry['preview']}</i>"
+    body += '\n' + preview
 
   return body
 
@@ -64,8 +68,8 @@ def post_news():
   print('Executing the daily digest job...')
 
   # we use frequency as lifespan in order to only fetch articles from the past FREQ hours
-  news_result = feedly_api.collect_content(news_feed_label, frequency, count = digest_count)
-  sm_result = feedly_api.collect_content(sm_feed_label, frequency, count = digest_count)
+  news_result = feedly_api.collect_content(feedly_api.fetch_stream, news_feed_label, frequency, count = digest_count)
+  sm_result = feedly_api.collect_content(feedly_api.fetch_stream, sm_feed_label, frequency, count = digest_count)
 
   # abort if couldn't fetch news data from Feedly
   if not news_result['success']:
@@ -81,29 +85,37 @@ def post_news():
 
   # send news digest
   news = news_result['data']
-  message = format_digest(INTRO_NEWS, news)
-  print(message)
-  result = telegram_api.send_message(message)
 
-  # abort if couldn't send a message to the channel
-  if not result['success']:
-    print('Error sending a message to TG Channel. Details:')
-    print(result['error'])
-    return
+  # only send the digest if there are entries present
+  if len(news):
+    message = format_digest(INTRO_NEWS, news)
+    result = telegram_api.send_message(message)
+
+    # abort if couldn't send a message to the channel
+    if not result['success']:
+      print('Error sending a message to TG Channel. Details:')
+      print(result['error'])
+      return
+  else:
+    print('Skipping the News digest due to lack of entries.')
 
   # send social media digest
   sm = sm_result['data']
-  message = format_digest(INTRO_SM, sm)
-  print(message)
-  result = telegram_api.send_message(message)
 
-  # abort if couldn't send a message to the channel
-  if not result['success']:
-    print('Error sending a message to TG Channel. Details:')
-    print(result['error'])
-    return
+  # only send the digest if there are entries present
+  if len(sm):
+    message = format_digest(INTRO_SM, sm)
+    result = telegram_api.send_message(message)
 
-  print('Successfully sent a digest!')
+    # abort if couldn't send a message to the channel
+    if not result['success']:
+      print('Error sending a message to TG Channel. Details:')
+      print(result['error'])
+      return
+  else:
+    print('Skipping the Social Media digest due to lack of entries.')
+
+  print('Completed the Digest Sendout execution!')
 
 schedule.every(frequency).hours.at(publish_time).do(post_news)
 
