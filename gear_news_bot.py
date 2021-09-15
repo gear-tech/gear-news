@@ -85,27 +85,37 @@ def post_news():
 
   # send news digest
   news = news_result['data']
-  message = format_digest(INTRO_NEWS, news)
-  result = telegram_api.send_message(message)
 
-  # abort if couldn't send a message to the channel
-  if not result['success']:
-    print('Error sending a message to TG Channel. Details:')
-    print(result['error'])
-    return
+  # only send the digest if there are entries present
+  if len(news):
+    message = format_digest(INTRO_NEWS, news)
+    result = telegram_api.send_message(message)
+
+    # abort if couldn't send a message to the channel
+    if not result['success']:
+      print('Error sending a message to TG Channel. Details:')
+      print(result['error'])
+      return
+  else:
+    print('Skipping the News digest due to lack of entries.')
 
   # send social media digest
   sm = sm_result['data']
-  message = format_digest(INTRO_SM, sm)
-  result = telegram_api.send_message(message)
 
-  # abort if couldn't send a message to the channel
-  if not result['success']:
-    print('Error sending a message to TG Channel. Details:')
-    print(result['error'])
-    return
+  # only send the digest if there are entries present
+  if len(sm):
+    message = format_digest(INTRO_SM, sm)
+    result = telegram_api.send_message(message)
 
-  print('Successfully sent a digest!')
+    # abort if couldn't send a message to the channel
+    if not result['success']:
+      print('Error sending a message to TG Channel. Details:')
+      print(result['error'])
+      return
+  else:
+    print('Skipping the Social Media digest due to lack of entries.')
+
+  print('Completed the Digest Sendout execution!')
 
 schedule.every(frequency).hours.at(publish_time).do(post_news)
 
