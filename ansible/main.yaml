@@ -11,12 +11,6 @@
 
 #Do tasks
   tasks:
-    - name: stop newsbot service
-      systemd:
-        name: newsbot
-        state: stopped
-        enabled: yes
-        daemon-reload: yes
 
     - name: Copy newsbotservice if not exist
       template:
