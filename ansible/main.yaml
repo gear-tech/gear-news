@@ -11,6 +11,7 @@
 
 #Do tasks
   tasks:
+
     - name: Copy newsbotservice if not exist
       template:
         src: newsbot.service
@@ -45,7 +46,7 @@
         FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
         TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
 
-    - name: Start ide-backend service
+    - name: Start newsbot service
       systemd:
         name: newsbot
         state: started
