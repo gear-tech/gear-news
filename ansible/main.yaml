@@ -12,10 +12,16 @@
 #Do tasks
   tasks:
 
-    - name: Copy newsbotservice if not exist
+    - name: Copy newsbot service if not exist
       template:
         src: newsbot.service
         dest: /lib/systemd/system/newsbot.service
+      become: yes
+
+    - name: Copy news service if not exist
+      template:
+        src: news.service
+        dest: /lib/systemd/system/news.service
       become: yes
 
     - name: Creates bot directory
