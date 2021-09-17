@@ -38,17 +38,31 @@
         src: ../telegram_api.py
         dest: /home/ec2-user/bot/telegram_api.py 
 
-    - name: Create ide-backend file .env
+    - name: Create bot file .env
       shell: >
         echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env
       environment:
         FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
         FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
         TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+    - name: Create bot file .env2
+      shell: >
+        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env2;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env2;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env2
+      environment:
+        FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
+        FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
+        TELEGRAM_BOT_TOKEN2: "{{ lookup('env','TELEGRAM_BOT_TOKEN2') }}"
 
     - name: Start newsbot service
       systemd:
         name: newsbot
-        state: started
+        state: restarted
+        enabled: yes
+        daemon-reload: yes
+
+    - name: Start news service
+      systemd:
+        name: news
+        state: restarted
         enabled: yes
         daemon-reload: yes
