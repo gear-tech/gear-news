@@ -54,7 +54,7 @@
         TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
     - name: Create bot file .env2
       shell: >
-        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env2;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env2;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN">>/home/ec2-user/bot/.env2
+        echo "FEEDLY_ACCESS_TOKEN=$FEEDLY_ACCESS_TOKEN">/home/ec2-user/bot/.env2;echo "FEEDLY_REFRESH_TOKEN=$FEEDLY_REFRESH_TOKEN">>/home/ec2-user/bot/.env2;echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN2">>/home/ec2-user/bot/.env2
       environment:
         FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
         FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
