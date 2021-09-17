@@ -7,8 +7,8 @@ from feedly_api import FeedlyApi
 from telegram_api import TelegramChannelBotApi
 
 DEFAULT_COUNT = 5
-INTRO_NEWS = 'GEAR News Digest'
-INTRO_SM = 'GEAR Social Media Digest'
+INTRO_NEWS = 'Trending Blockchain News Digest'
+INTRO_SM = 'Trending Blockchain Social Media Digest'
 
 feedly_access_token = os.environ.get('FEEDLY_ACCESS_TOKEN')
 feedly_refresh_token = os.environ.get('FEEDLY_REFRESH_TOKEN')
