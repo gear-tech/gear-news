@@ -6,6 +6,7 @@
         FEEDLY_ACCESS_TOKEN: "{{ lookup('env','FEEDLY_ACCESS_TOKEN') }}"
         FEEDLY_REFRESH_TOKEN: "{{ lookup('env','FEEDLY_REFRESH_TOKEN') }}"
         TELEGRAM_BOT_TOKEN: "{{ lookup('env','TELEGRAM_BOT_TOKEN') }}"
+        TELEGRAM_BOT_TOKEN2: "{{ lookup('env','TELEGRAM_BOT_TOKEN2') }}"
         FREQ: "{{ lookup('env','FREQ') }}"
         COUNT: "{{ lookup('env','COUNT') }}"
 
