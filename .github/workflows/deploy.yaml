@@ -27,5 +27,6 @@ jobs:
           FEEDLY_ACCESS_TOKEN: ${{ secrets.FEEDLY_ACCESS_TOKEN }}
           FEEDLY_REFRESH_TOKEN: ${{ secrets.FEEDLY_REFRESH_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN2 }}
           FREQ: ${{ secrets.FREQ }}
           COUNT: ${{ secrets.COUNT }}
